@@ -14,6 +14,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agnes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +26,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 14
 
       - name: Install dependencies
         run: npm install
@@ -43,7 +46,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: preview-site
+          folder: agnes/preview-site
           target-folder: branches/${{ env.BRANCH_NAME }}
           clean: false
           git-config-name: github-actions
