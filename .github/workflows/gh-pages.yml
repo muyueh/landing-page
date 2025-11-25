@@ -10,13 +10,12 @@ permissions:
   pages: write
   id-token: write
 
-environment:
-  name: github-pages
-  url: ${{ steps.deployment.outputs.page_url }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,9 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 16
-          cache: npm
-          cache-dependency-path: agnes/package-lock.json
+          node-version: 14
 
       - name: Install dependencies
         working-directory: agnes

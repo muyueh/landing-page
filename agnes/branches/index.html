@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Branch Previews</title>
+  <link href="https://fonts.googleapis.com/css?family=Hind+Vadodara:400,700|Mukta:500,700" rel="stylesheet">
+  <link rel="stylesheet" href="../dist/css/style.css">
+  <style>
+    .branch-list { list-style: none; padding: 0; margin: 0; }
+    .branch-list li { margin-bottom: 12px; }
+    .branch-list a { font-weight: 700; }
+    .status { color: #6c757d; }
+  </style>
+</head>
+<body class="is-boxed has-animations">
+  <div class="body-wrap boxed-container">
+    <header class="site-header">
+      <div class="container">
+        <div class="site-header-inner">
+          <div class="brand header-brand">
+            <h1 class="m-0">
+              <a href="../">
+                <svg width="48" height="32" viewBox="0 0 48 32" xmlns="http://www.w3.org/2000/svg">
+                  <title>Branch Previews</title>
+                  <defs>
+                    <linearGradient x1="0%" y1="100%" y2="0%" id="logo-a">
+                      <stop stop-color="#007CFE" stop-opacity="0" offset="0%" />
+                      <stop stop-color="#007DFF" offset="100%" />
+                    </linearGradient>
+                    <linearGradient x1="100%" y1="50%" x2="0%" y2="50%" id="logo-b">
+                      <stop stop-color="#FF4F7A" stop-opacity="0" offset="0%" />
+                      <stop stop-color="#FF4F7A" offset="100%" />
+                    </linearGradient>
+                  </defs>
+                  <g fill="none" fill-rule="evenodd">
+                    <rect fill="url(#logo-a)" width="32" height="32" rx="16" />
+                    <rect fill="url(#logo-b)" x="16" width="32" height="32" rx="16" />
+                  </g>
+                </svg>
+              </a>
+            </h1>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-inner">
+            <div class="hero-copy">
+              <h1 class="hero-title h2-mobile mt-0">Branch preview links</h1>
+              <p class="hero-paragraph">Use these links to view the latest preview deployment for each branch.</p>
+              <p id="status" class="status">Loading branches…</p>
+              <ul id="branch-list" class="branch-list"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const owner = 'muyueh';
+      const repo = 'landing-page';
+      const branchList = document.getElementById('branch-list');
+      const status = document.getElementById('status');
+
+      function sanitizeBranchName(name) {
+        return name.replace(/\//g, '-');
+      }
+
+      function createBranchItem(branch) {
+        const sanitized = sanitizeBranchName(branch.name);
+        const url = `../branches/${sanitized}/`;
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = url;
+        link.textContent = branch.name;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        li.appendChild(link);
+        return li;
+      }
+
+      function showError(message) {
+        status.textContent = message;
+        status.classList.add('text-color-error');
+      }
+
+      fetch(`https://api.github.com/repos/${owner}/${repo}/branches?per_page=100`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Unable to load branches (status ${response.status})`);
+          }
+          return response.json();
+        })
+        .then((branches) => {
+          if (!Array.isArray(branches) || branches.length === 0) {
+            status.textContent = 'No branches found.';
+            return;
+          }
+
+          status.textContent = 'Choose a branch:';
+          branches
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach((branch) => branchList.appendChild(createBranchItem(branch)));
+        })
+        .catch((error) => {
+          console.error(error);
+          showError('There was a problem loading branches. Please try again later.');
+        });
+    })();
+  </script>
+</body>
+</html>
