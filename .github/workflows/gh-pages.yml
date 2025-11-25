@@ -39,13 +39,21 @@ jobs:
         working-directory: agnes
         run: npm run build
 
+      - name: Prepare site bundle
+        working-directory: agnes
+        run: |
+          mkdir -p site/dist
+          cp index.html site/
+          cp -r dist/. site/dist/
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: agnes
+          folder: agnes/site
           clean: true
           clean-exclude: |
             branches
+            branches/**
           git-config-name: github-actions
           git-config-email: github-actions@users.noreply.github.com
