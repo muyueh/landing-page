@@ -20,9 +20,9 @@ jobs:
           # Fetch the current Pages output so we can retain branch preview folders
           git fetch origin gh-pages:gh-pages || exit 0
           git worktree add /tmp/gh-pages gh-pages
-          mkdir -p agnes/branches
+          mkdir -p branches
           if [ -d /tmp/gh-pages/branches ]; then
-            cp -R /tmp/gh-pages/branches/. agnes/branches/
+            cp -R /tmp/gh-pages/branches/. branches/
           fi
           git worktree remove /tmp/gh-pages --force
 
@@ -32,25 +32,25 @@ jobs:
           node-version: 14
 
       - name: Install dependencies
-        working-directory: agnes
         run: npm install --ignore-scripts
 
       - name: Build assets
-        working-directory: agnes
         run: npm run build
 
       - name: Prepare site bundle
-        working-directory: agnes
         run: |
           mkdir -p site/dist
           cp index.html site/
           cp -r dist/. site/dist/
+          if [ -d branches ]; then
+            cp -R branches site/
+          fi
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: agnes/site
+          folder: site
           clean: true
           clean-exclude: |
             branches

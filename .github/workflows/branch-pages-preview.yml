@@ -14,9 +14,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: agnes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,7 +43,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: agnes/preview-site
+          folder: preview-site
           target-folder: branches/${{ env.BRANCH_NAME }}
           clean: false
           git-config-name: github-actions

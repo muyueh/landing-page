@@ -172,3 +172,7 @@ $RECYCLE.BIN/
 
 # Exclude bundled PDF manual
 Agnes.pdf
+
+# Build artifacts created by workflows
+site/
+preview-site/
