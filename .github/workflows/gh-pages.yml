@@ -15,21 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Restore existing branch previews
-        run: |
-          # Fetch the current Pages output so we can retain branch preview folders
-          git fetch origin gh-pages:gh-pages || exit 0
-          git worktree add /tmp/gh-pages gh-pages
-          mkdir -p branches
-          if [ -d /tmp/gh-pages/branches ]; then
-            cp -R /tmp/gh-pages/branches/. branches/
-          fi
-          git worktree remove /tmp/gh-pages --force
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Install dependencies
         run: npm install --ignore-scripts
@@ -38,19 +27,13 @@ jobs:
         run: npm run build
 
       - name: Prepare site bundle
-        run: |
-          mkdir -p site/dist
-          cp index.html site/
-          cp -r dist/. site/dist/
-          if [ -d branches ]; then
-            cp -R branches site/
-          fi
+        run: cp index.html dist/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: site
+          folder: dist
           clean: true
           clean-exclude: |
             branches

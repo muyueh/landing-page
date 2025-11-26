@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
@@ -34,16 +34,14 @@ jobs:
       - name: Prepare preview bundle
         run: |
           BRANCH_NAME="${GITHUB_REF_NAME//\//-}"
-          mkdir -p preview-site/dist
-          cp index.html preview-site/
-          cp -r dist/. preview-site/dist/
+          cp index.html dist/
           echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: preview-site
+          folder: dist
           target-folder: branches/${{ env.BRANCH_NAME }}
           clean: false
           git-config-name: github-actions
