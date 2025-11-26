@@ -34,16 +34,20 @@ jobs:
       - name: Prepare preview bundle
         run: |
           BRANCH_NAME="${GITHUB_REF_NAME//\//-}"
-          mkdir -p site
-          cp index.html site/
-          cp -R dist site/
-          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          PREVIEW_DIR="site/${BRANCH_NAME}"
+          mkdir -p "${PREVIEW_DIR}"
+          cp index.html "${PREVIEW_DIR}/"
+          cp -R dist "${PREVIEW_DIR}/"
+          {
+            echo "BRANCH_NAME=${BRANCH_NAME}"
+            echo "PREVIEW_DIR=${PREVIEW_DIR}"
+          } >> "$GITHUB_ENV"
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: site
+          folder: ${{ env.PREVIEW_DIR }}
           target-folder: branches/${{ env.BRANCH_NAME }}
           clean: false
           git-config-name: github-actions
